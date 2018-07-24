@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#app {
+    width: 80%;
+}
+
+.code-block {
+    margin: 0.5em;
+    padding: 0.2em 1em;
+    color: #030;
+    background-color: #eee;
+    border: solid 1px #ccc;
+    border-radius: 0.2em;
+}
+
+.gear-box {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+.gear-box.r2 {
+    transform: rotate(90deg);
+}
+
+.gear-box.r3 {
+    transform: rotate(180deg);
+}
+
+.gear-box.r4 {
+    transform: rotate(270deg);
+}
+
+.gear-box > .gear {
+    width: 50px;
+    height: 50px;
+    color: #ccc;
+    border-radius: 100%;
+    border: 2px solid #999;
+    background-color: #666;
+    box-sizing: border-box;
+}
+
+.gear-box > .gear:before {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    content: "";
+    display: inline-block;
+    width: inherit;
+    height: inherit;
+
+    border: 2px dashed;
+    border-radius: inherit;
+    border-color: #999;
+    transform: translate(-50%,-50%);
+}
+
+.gear-box > .arrow {
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #333;
+}
+
+.gear-board {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

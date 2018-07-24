@@ -12,7 +12,7 @@
   "keywords": [
     "BuckleScript"
   ],
-  "author": "",
+  "author": "cedretaber",
   "license": "MIT",
   "dependencies": {
     "react": "^16.2.0",
