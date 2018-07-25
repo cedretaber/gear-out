@@ -1,0 +1,35 @@
+open BSReact
+
+let make_style size =
+  let temp = String.concat " " @@ (Array.make size "1fr" |> Array.to_list) in
+  let size = string_of_int (55 * 4) in
+  let size = {j|$(size)px|j} in
+  Obj.magic [%bs.obj {
+    width= size;
+    height= size;
+    display= "grid";
+    gridTemplateRows= temp;
+    gridTemplateColumns= temp
+  }]
+
+let component = RR.statelessComponent "GearBoard"
+
+let make ~board:{Board.size; Board.gears} ?on_gear_click ?(class_name="") _children = {
+  component with
+  render= fun _self ->
+    let class_name = {j|gear-board $(class_name)|j} in
+    let style = make_style size in
+    let children =
+      gears
+      |> Array.to_list
+      |> List.mapi (fun i r ->
+          let on_click = Belt.Option.map on_gear_click @@ fun f -> f i in
+          Parts_Gear.c ~r ?on_click []
+        ) in
+    div ~class_name [
+      div ~style children
+    ]
+}
+
+let c ~board ?on_gear_click ?class_name children =
+  RR.element @@ make ~board ?on_gear_click ?class_name children

@@ -1,29 +1,5 @@
 open BSReact
 
-module GearBoard = struct
-  let style = Obj.magic [%bs.obj {
-      width= "220px";
-      height= "220px";
-      display= "grid";
-      gridTemplateRows= "1fr 1fr 1fr 1fr";
-      gridTemplateColumns= "1fr 1fr 1fr 1fr"
-    }]
-
-  let component = RR.statelessComponent "GearBoard"
-
-  let make ~gears _children = {
-    component with
-    render= fun _self ->
-      let children = List.map (fun r -> Gear.c ~r []) gears in
-      div ~class_name:"gear-board" [
-        div ~style children
-      ]
-  }
-
-  let c ~gears children =
-    RR.element @@ make ~gears children
-end
-
 module CodeBlock = struct
   let component = RR.statelessComponent "CodeBlock"
 
@@ -41,10 +17,6 @@ module CodeBlock = struct
     RR.element @@ make children
 end
 
-let initialState () = State.Problem
-
-let reducer (_: Action.t) (_: State.t) = RR.NoUpdate
-
 let component = RR.statelessComponent "Problem"
 
 let make _children = {
@@ -54,7 +26,7 @@ let make _children = {
       h1 [s "Gear Out!"];
       p [s {j|オフラインリアルタイムどう書く E26 問題|j}];
       h2 [s {j|問題文|j}];
-      GearBoard.c ~gears:[1; 2; 2; 1; 4; 3; 1; 2; 1; 1; 2; 3; 1; 4; 1; 4] [];
+      Parts.Board.c ~board:{ Board.size= 4; Board.gears= [|1; 2; 2; 1; 4; 3; 1; 2; 1; 1; 2; 3; 1; 4; 1; 4|] } [];
       p [s {j|図のように歯車が設置されています。歯車には印が付いていて、その場所に応じて「上」「右」「下」「左」の向きがあります。|j}];
       p [
         s {j|「上」向きの歯車を、|j};
