@@ -10,7 +10,7 @@ body {
 }
 
 #app {
-    width: 80%;
+    width: 100%;
 }
 
 .code-block {
@@ -103,4 +103,51 @@ body {
     border-radius: 0.3em;
     border: solid 1px #999;
     background-color: white;
+}
+
+.submit {
+    width: 80%;
+}
+
+.test-case-list {
+    width: 100%;
+}
+
+.test-case-panel {
+    position: relative;
+    width: 100%;
+    margin: 0.5em;
+    padding: 1px;
+    color: #333;
+    border: solid 1px #999;
+    background-color: #ccc;
+    border-radius: 0.3em;
+}
+
+.test-case-panel.accepted {
+    color: #363;
+    border: solid 1px #9c9;
+    background-color: #cfc;
+}
+
+.test-case-panel.wrong-answer {
+    color: #633;
+    border: solid 1px #c99;
+    background-color: #fcc;
+}
+
+.test-case-header {
+    margin-left: 1em;
+}
+
+.test-case-panel-body {
+    padding: 0.5em;
+    border-radius: 0.3em;
+    border: solid 1px #999;
+    background-color: white;
+    display: flex;
+}
+
+.error-message {
+    margin: 0.5em;
 }

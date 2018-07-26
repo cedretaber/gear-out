@@ -76,10 +76,21 @@ let input ?type_ ?value ?on_change children =
       () in
   RR.createDomElement "input" ~props @@ Array.of_list children
 
-let button ?class_name ?on_click children =
+let button ?class_name ?disabled ?on_click children =
   let props = Obj.magic @@
     RD.props
       ?className:class_name
+      ?disabled
       ?onClick:on_click
       () in
   RR.createDomElement "button" ~props @@ Array.of_list children
+
+let textarea ?class_name ?value ?read_only ?on_change children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      ?value
+      ?readOnly:read_only
+      ?onChange:on_change
+      () in
+  RR.createDomElement "textarea" ~props @@ Array.of_list children

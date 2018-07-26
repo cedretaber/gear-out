@@ -24,13 +24,19 @@ module Submit = struct
 
     type t = {
       state: state;
+      is_open: bool;
       board: Board.t;
-      input: string;
+      output: string;
       message: string option
     }
 
-    let make size =
-      { state= Waiting; board= Board.make size; input= ""; message= None}
+    let make size = {
+      state= Waiting; 
+      is_open= false; 
+      board= Board.make size; 
+      output= ""; 
+      message= None
+    }
   end
 
   type state
@@ -45,20 +51,22 @@ module Submit = struct
   type t = {
     state: state;
     input_style: input_style;
-    test_cases: TestCase.t list
+    output: string;
+    test_cases: TestCase.t array
   }
 
   let default_sizes =
-    [2; 2; 2; 2; 2; 2; 2; 2;
-     4; 4; 4; 4; 4; 4; 4; 4; 4; 4;
-     6; 6; 6; 6; 6; 6; 6; 6; 6; 6;
-     8; 8; 8; 8; 8; 8; 8; 8; 8; 8;
-     10; 10; 10; 10]
+    [|2; 2; 2; 2; 2; 2; 2; 2;
+      4; 4; 4; 4; 4; 4; 4; 4; 4; 4;
+      6; 6; 6; 6; 6; 6; 6; 6; 6; 6;
+      8; 8; 8; 8; 8; 8; 8; 8; 8; 8;
+      10; 10; 10; 10|]
 
   let make ?(sizes=default_sizes) () = {
     state= Ready;
     input_style= Competitive;
-    test_cases= List.map TestCase.make sizes
+    output= "";
+    test_cases= Array.map TestCase.make sizes
   }
 end
 
