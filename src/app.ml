@@ -6,7 +6,7 @@ module P = Page
 
 let initial_state page () =
   Random.self_init ();
-  S.{ page; playground= Playground.make 4 }
+  S.{ page; submit= Submit.make (); playground= Playground.make 4 }
 
 let reducer action state = match action, state with
     A.ChangePage page, _ -> RR.Update S.{ state with page }
@@ -30,7 +30,7 @@ let make ?(initial_page=P.Problem) _children = {
   render= fun self ->
     let content = match self.state with
         {S.page= P.Problem} -> Pages.Problem.c []
-      | {S.page= P.Submit} -> div []
+      | {S.page= P.Submit} -> Pages.Submit.c []
       | {S.page= P.Playground; playground= {board= {size} as board} as playground} ->
         let dispatcher = Pages.Playground.{
             gear_click= (fun i _ ->

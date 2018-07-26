@@ -23,8 +23,10 @@ let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_cli
           s {j|リセット|j}
         ]
       ];
-      div ~class_name:"board" [
-        Parts.Board.c ~board ~gear_click []
+      div ~class_name:"board-holder" [
+        div ~class_name:"board" [
+          Parts.Board.c ~board ~gear_click []
+        ]
       ];
       div ~class_name:"count" [
         p [

@@ -39,6 +39,11 @@ body {
     box-sizing: border-box;
 }
 
+.gear-box.correct > .gear {
+    border: 2px solid #ccc;
+    background-color: #999;
+}
+
 .gear-box > .gear:before {
     position: relative;
     top: 50%;
@@ -54,6 +59,10 @@ body {
     transform: translate(-50%,-50%);
 }
 
+.gear-box.correct > .gear:before {
+    border-color: #ccc;
+}
+
 .gear-box > .arrow {
     position: absolute;
     top: 5px;
@@ -65,19 +74,33 @@ body {
     border-bottom: 15px solid #311;
 }
 
+.gear-box.correct > .arrow {
+    border-bottom: 15px solid #977;
+}
+
 .gear-board {
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-.playground > .board {
+.playground > .board-holder {
     margin: 0.5em;
-    padding: 0.5em;
+    padding: 1px;
     border: solid 1px #999;
+    background-color: #ccc;
     border-radius: 0.3em;
 }
 
-.playground.cleared > .board {
+.playground.cleared > .board-holder {
     border: solid 1px #9c9;
+    background-color: #cfc;
+}
+.playground > .board-holder > .board {
+    margin: 0;
+    margin-top: 1em;
+    padding: 0.5em;
+    border-radius: 0.3em;
+    border: solid 1px #999;
+    background-color: white;
 }
