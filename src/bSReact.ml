@@ -6,6 +6,8 @@ module RE = ReactEventRe
 
 external s : string -> RR.reactElement = "%identity"
 
+let target_value e = (e |> RE.Form.target |> RD.domElementToObj)##value
+
 let empty () = Js.Obj.empty ()
 
 let div ?class_name ?style ?on_click children =
@@ -57,3 +59,27 @@ let b children =
 
 let p children =
   RR.createDomElement "p" ~props:(empty ()) @@ Array.of_list children
+
+let label ?for_ children =
+  let props = Obj.magic @@
+    RD.props
+      ?htmlFor:for_
+      () in
+  RR.createDomElement "label" ~props @@ Array.of_list children
+
+let input ?type_ ?value ?on_change children =
+  let props = Obj.magic @@
+    RD.props
+      ?type_
+      ?value
+      ?onChange:on_change
+      () in
+  RR.createDomElement "input" ~props @@ Array.of_list children
+
+let button ?class_name ?on_click children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      ?onClick:on_click
+      () in
+  RR.createDomElement "button" ~props @@ Array.of_list children

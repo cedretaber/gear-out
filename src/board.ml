@@ -12,8 +12,7 @@ let touch' x y size gears =
     (fun (dx, dy) ->
        let x, y = x + dx, y + dy in
        if x >= 0 && x < size && y >= 0 && y < size then
-         gears.(y * size + x) <- gears.(y * size + x) - 1;
-    )
+         gears.(y * size + x) <- gears.(y * size + x) - 1;)
     dirs
 
 let touch x y ({size; gears} as board) =

@@ -1,8 +1,14 @@
 open BSReact
 
+type dispatcher = {
+  gear_click: int -> RE.Mouse.t -> unit;
+  change_size: RE.Form.t -> unit;
+  reset: RE.Mouse.t -> unit
+}
+
 let component = RR.statelessComponent "Playground"
 
-let make ~board ~on_gear_click _children = {
+let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_click; change_size; reset} _children = {
   component with
   render= fun _self ->
     let class_name =
@@ -11,11 +17,22 @@ let make ~board ~on_gear_click _children = {
       else
         "playground" in
     div ~class_name [
+      div ~class_name:"settings" [
+        input ~type_:"number" ~value:(string_of_int size) ~on_change:change_size [];
+        button ~on_click:reset [
+          s {j|リセット|j}
+        ]
+      ];
       div ~class_name:"board" [
-        Parts.Board.c ~board ~on_gear_click []
+        Parts.Board.c ~board ~gear_click []
+      ];
+      div ~class_name:"count" [
+        p [
+          s {j|操作回数: $(count)|j}
+        ]
       ]
     ]
 }
 
-let c ~board ~on_gear_click children =
-  RR.element @@ make ~board ~on_gear_click children
+let c ~playground ~dispatcher children =
+  RR.element @@ make ~playground ~dispatcher children
