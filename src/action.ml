@@ -9,6 +9,7 @@ type submit
   | ChangeOutputAll of string
   | SubmitAnswerAll
   | RunBoard of (int * string) list
+  | ResetSubmit
 
 type playground
   = ClickGear of Board.t
@@ -31,6 +32,7 @@ let submit_answer i = Submit (SubmitAnswer i)
 let change_output_all output = Submit (ChangeOutputAll output)
 let submit_answer_all = Submit SubmitAnswerAll
 let run_board ops = Submit (RunBoard ops)
+let reset_submit = Submit ResetSubmit
 
 let click_gear board = Playground (ClickGear board)
 let change_size size = Playground (ChangeSize size)

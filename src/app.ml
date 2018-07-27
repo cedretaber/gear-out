@@ -121,6 +121,8 @@ let reducer action state = match action with
          | _ -> RR.SideEffects (fun self -> self.send @@ A.run_board rest))
       | A.RunBoard [], {S.submit= {state= Testing} as submit} ->
         RR.Update { state with submit= { submit with state= Ready} }
+      | A.ResetSubmit, {S.submit= {state= Ready}} ->
+        RR.Update { state with submit= S.Submit.make () }
       | _ -> RR.NoUpdate)
   | A.Playground action -> (match action, state with
         A.ClickGear board, {S.playground= {state= Playing; count} as playground} ->
@@ -156,7 +158,10 @@ let submit_dispatcherk {RR.send} = Pages.Submit.{
         send @@ A.change_output_all output);
     submit_answer_all= (fun event ->
         RE.Mouse.preventDefault event;
-        send A.submit_answer_all)
+        send A.submit_answer_all);
+    reset= (fun event ->
+        RE.Mouse.preventDefault event;
+        send A.reset_submit)
   }
 
 let playground_dispatcher {RR.send} {S.Playground.board= {size} as board} = Pages.Playground.{
@@ -191,7 +196,8 @@ let make ?(initial_page=P.Problem) _children = {
       rewrite_hash (match page with P.Problem -> "problem" | P.Submit -> "submit" | P.Playground -> "playground");
       self.send @@ A.change_page page in
     div [
-      header [
+      header ~class_name:"main" [
+        span ~class_name:"logo" [ s "Gears Out!" ];
         nav [
           ul [
             li ~class_name:problem_tab [ a ~href:"#problem" ~on_click:(move_page P.Problem) [ s {j|問題|j} ] ];

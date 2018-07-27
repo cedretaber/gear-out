@@ -13,6 +13,83 @@ body {
     width: 100%;
 }
 
+button {
+    cursor: pointer;
+}
+
+.button-set {
+    display: flex;
+}
+
+.button-set > button {
+    font-size: 1.5rem;
+    height: 3rem;
+    padding: 0 0.5rem;
+    border: solid 1px #999;
+    border-right: 0;
+    background-color: white;
+}
+
+.button-set > .label {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    height: 3rem;
+    padding: 0 0.5rem;
+    border-right: 0;
+    background-color: #999;
+    color: white;
+}
+
+.button-set > button:first-child,
+.button-set > .label:first-child {
+    border-top-left-radius: 0.1em;
+    border-bottom-left-radius: 0.1em;
+}
+
+.button-set > button:last-child {
+    border-right: solid 1px #999;
+    border-top-right-radius: 0.1em;
+    border-bottom-right-radius: 0.1em;
+}
+
+input[type="number"],
+input[type="text"] {
+    appearance: none;
+    font-size: 1.5rem;
+}
+
+textarea {
+    appearance: none;
+    height: 10em;
+    width: 30em;
+}
+
+.input-set {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.input-set > input,
+.input-set > textarea {
+    margin-right: 0;
+    padding-right: 0;
+    border: solid 1px #999;
+    border-top-left-radius: 0.1em;
+    border-bottom-left-radius: 0.1em;
+}
+
+.input-set > button {
+    font-size: 1.2rem;
+    text-decoration: none;
+    background-color: #fff;
+    border: solid 1px #999;
+    border-left: none;
+    border-top-right-radius: 0.1em;
+    border-bottom-right-radius: 0.1em;
+}
+
 .code-block {
     margin: 0.5em;
     padding: 0.2em 1em;
@@ -84,6 +161,46 @@ body {
     justify-content: center;
 }
 
+header.main {
+    display: flex;
+    background-color: #333;
+    border-bottom: #111;
+    margin-bottom: 1em;
+    padding: 0;
+}
+
+header.main span.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5em 1em;
+    font-size: 150%;
+    font-weight: 600;
+    color: white;
+}
+
+header.main nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+}
+
+header.main nav ul li {
+    margin: 0;
+    padding: 0.3em 1em;
+}
+
+header.main nav ul li a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+header.main nav ul li.active a {
+    color: #666;
+    text-decoration: none;
+}
+
 .playground > .board-holder {
     margin: 0.5em;
     padding: 1px;
@@ -107,6 +224,32 @@ body {
 
 .submit {
     width: 80%;
+}
+
+.submit-controls {
+    display: flex;
+    margin: 0.5em 0;
+}
+
+.input-style-buttons,
+.all-toggle-buttons,
+.reset-button {
+    margin: 1em 2em;
+}
+
+.reset-button button {
+    font-size: 1.5rem;
+    height: 3rem;
+    padding: 0 0.5rem;
+    background-color: #fff;
+    border: solid 1px #999;
+    border-radius: 0.1em;
+}
+
+.test-case-io-all {
+    display: flex;
+    margin: 1rem;
+    justify-content: space-evenly;
 }
 
 .test-case-list {
@@ -140,12 +283,35 @@ body {
     margin-left: 1em;
 }
 
+.test-case-header > h3 > .test-case-size {
+    margin-left: 2em;
+    color: #666;
+}
+
 .test-case-panel-body {
+    display: flex;
     padding: 0.5em;
     border-radius: 0.3em;
     border: solid 1px #999;
     background-color: white;
+}
+
+.test-case-panel-body > .board-holder {
+    flex: 1;
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-case-panel-body > .test-case-io {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.test-case-panel-body > .test-case-io > .input-set {
+    margin: 1rem 0;
 }
 
 .error-message {

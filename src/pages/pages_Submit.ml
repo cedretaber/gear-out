@@ -62,10 +62,14 @@ module TestCasePanel = struct
       _children = {
     component with
     render= fun _self ->
+      let size = board.size in
       let header =
         div ~class_name:"test-case-header" ~on_click:header_click [
           h3 [
-            s {j|Case#$(idx)|j}
+            s {j|Case#$(idx)|j};
+            small ~class_name:"test-case-size" [
+              s {j|$(size)x$(size)|j}
+            ]
           ]
         ] in
       let panel_class = match state with
@@ -91,15 +95,21 @@ module TestCasePanel = struct
         div ~class_name:{j|test-case-panel $(panel_class)|j} [
           header;
           div ~class_name:"test-case-panel-body" [
-            Parts.Board.c ~board [];
+            div ~class_name:"board-holder" [
+              Parts.Board.c ~board [];
+            ];
             div ~class_name:"test-case-io" [
-              textarea ~class_name:{j|test-case-input case-$(idx)|j} ~read_only:true ~value:input_text [];
-              button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard {j|.test-case-input.case-$(idx)|j}) [
-                s {j|クリップボードにコピー|j}
+              div ~class_name:"input-set" [
+                textarea ~class_name:{j|test-case-input case-$(idx)|j} ~read_only:true ~value:input_text [];
+                button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard {j|.test-case-input.case-$(idx)|j}) [
+                  i ~class_name:"far fa-copy fa-3x" []
+                ];
               ];
-              textarea ~class_name:"test-case-output" ~read_only:(state <> TC.Waiting) ~on_change:change_output ~value:output [];
-              button ~class_name:"test-case-submit" ~disabled:(state <> TC.Waiting) ~on_click:submit_answer [
-                s {j|提出|j}
+              div ~class_name:"input-set" [
+                textarea ~class_name:"test-case-output" ~read_only:(state <> TC.Waiting) ~on_change:change_output ~value:output [];
+                button ~class_name:"test-case-submit" ~disabled:(state <> TC.Waiting) ~on_click:submit_answer [
+                  i ~class_name:"fas fa-file-upload fa-3x" []
+                ]
               ]
             ];
           ];
@@ -159,14 +169,15 @@ type dispatcher = {
   change_output: int -> RE.Form.t -> unit;
   submit_answer: int -> RE.Mouse.t -> unit;
   change_output_all: RE.Form.t -> unit;
-  submit_answer_all: RE.Mouse.t -> unit
+  submit_answer_all: RE.Mouse.t -> unit;
+  reset: RE.Mouse.t -> unit;
 }
 
 let component = RR.statelessComponent "Submit"
 
 let make
     ~submit:{Submit.state; input_style; test_cases; output}
-    ~dispatcher:{header_click; change_input_style; all_toggle; change_output; submit_answer; change_output_all; submit_answer_all}
+    ~dispatcher:{header_click; change_input_style; all_toggle; change_output; submit_answer; change_output_all; submit_answer_all; reset}
     _children = {
   component with
   render= fun _self ->
@@ -191,18 +202,27 @@ let make
         button ~on_click:(all_toggle true) [ s {j|全て開く|j} ]
       ] in
     div ~class_name:"submit" [
-      div [
-        div ~class_name:"input-style-buttons" input_style_buttons;
-        div ~class_name:"all-toggle-buttons" all_toggle_buttons
+      div ~class_name:"submit-controls" [
+        div ~class_name:"button-set input-style-buttons" @@ (div ~class_name:"label" [ s {j|入力形式|j} ]) :: input_style_buttons;
+        div ~class_name:"button-set all-toggle-buttons" @@ (div ~class_name:"label" [ s {j|パネル一括操作|j} ]) :: all_toggle_buttons;
+        div ~class_name:"reset-button" [
+          button ~on_click:reset [
+            s {j|リセット|j}
+          ]
+        ];
       ];
       div ~class_name:"test-case-io-all" [
-        textarea ~class_name:"test-case-input" ~read_only:true ~value:input_all_value [];
-        button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard ".test-case-io-all > .test-case-input") [
-          s {j|クリップボードにコピー|j}
+        div ~class_name:"input-set" [
+          textarea ~class_name:"test-case-input" ~read_only:true ~value:input_all_value [];
+          button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard ".test-case-io-all .test-case-input") [
+            i ~class_name:"far fa-copy fa-3x" []
+          ];
         ];
-        textarea ~class_name:"test-case-output-all" ~on_change:change_output_all ~value:output [];
-        button ~class_name:"test-case-submit-all" ~on_click:submit_answer_all [
-          s {j|提出|j}
+        div ~class_name:"input-set" [
+          textarea ~class_name:"test-case-output" ~on_change:change_output_all ~value:output [];
+          button ~class_name:"test-case-submit" ~on_click:submit_answer_all [
+            i ~class_name:"fas fa-file-upload fa-3x" []
+          ]
         ]
       ];
       div ~class_name:"test-case-list" test_cases

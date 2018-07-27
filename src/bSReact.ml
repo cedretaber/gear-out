@@ -19,14 +19,27 @@ let div ?class_name ?style ?on_click children =
       () in
   RR.createDomElement "div" ~props @@ Array.of_list children
 
+let span ?class_name ?style ?on_click children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      ?onClick:on_click
+      ?style
+      () in
+  RR.createDomElement "span" ~props @@ Array.of_list children
+
 let code children =
   RR.createDomElement "code" ~props:(empty ()) @@ Array.of_list children
 
 let pre children =
   RR.createDomElement "pre" ~props:(empty ()) @@ Array.of_list children
 
-let header children =
-  RR.createDomElement "header" ~props:(empty ()) @@ Array.of_list children
+let header ?class_name children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      () in
+  RR.createDomElement "header" ~props @@ Array.of_list children
 
 let nav children =
   RR.createDomElement "nav" ~props:(empty ()) @@ Array.of_list children
@@ -64,12 +77,26 @@ let b children =
 let p children =
   RR.createDomElement "p" ~props:(empty ()) @@ Array.of_list children
 
+let i ?class_name children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      () in
+  RR.createDomElement "i" ~props @@ Array.of_list children
+
 let label ?for_ children =
   let props = Obj.magic @@
     RD.props
       ?htmlFor:for_
       () in
   RR.createDomElement "label" ~props @@ Array.of_list children
+
+let small ?class_name children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      () in
+  RR.createDomElement "small" ~props @@ Array.of_list children
 
 let input ?type_ ?value ?on_change children =
   let props = Obj.magic @@

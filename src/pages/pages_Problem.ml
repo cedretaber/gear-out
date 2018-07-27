@@ -23,7 +23,7 @@ let make _children = {
   component with
   render= fun _self ->
     div ~class_name:"problem" [
-      h1 [s "Gear Out!"];
+      h1 [s "Gears Out!"];
       p [s {j|オフラインリアルタイムどう書く E26 問題|j}];
       h2 [s {j|問題文|j}];
       Parts.Board.c ~board:{ Board.size= 4; Board.gears= [|1; 2; 2; 1; 4; 3; 1; 2; 1; 1; 2; 3; 1; 4; 1; 4|] } [];

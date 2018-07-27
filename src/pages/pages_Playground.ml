@@ -17,7 +17,7 @@ let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_cli
       else
         "playground" in
     div ~class_name [
-      div ~class_name:"settings" [
+      div ~class_name:"input-set" [
         input ~type_:"number" ~value:(string_of_int size) ~on_change:change_size [];
         button ~on_click:reset [
           s {j|リセット|j}
