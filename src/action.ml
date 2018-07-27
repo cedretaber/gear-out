@@ -6,6 +6,9 @@ type submit
   | AllToggle of bool
   | ChangeOutput of int * string
   | SubmitAnswer of int
+  | ChangeOutputAll of string
+  | SubmitAnswerAll
+  | RunBoard of (int * string) list
 
 type playground
   = ClickGear of Board.t
@@ -25,6 +28,9 @@ let change_input_style style = Submit (ChangeInputStyle style)
 let all_toggle is_open = Submit (AllToggle is_open)
 let change_output i output = Submit (ChangeOutput (i, output))
 let submit_answer i = Submit (SubmitAnswer i)
+let change_output_all output = Submit (ChangeOutputAll output)
+let submit_answer_all = Submit SubmitAnswerAll
+let run_board ops = Submit (RunBoard ops)
 
 let click_gear board = Playground (ClickGear board)
 let change_size size = Playground (ChangeSize size)

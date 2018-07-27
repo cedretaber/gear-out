@@ -34,8 +34,12 @@ let nav children =
 let ul children =
   RR.createDomElement "ul" ~props:(empty ()) @@ Array.of_list children
 
-let li children =
-  RR.createDomElement "li" ~props:(empty ()) @@ Array.of_list children
+let li ?class_name children =
+  let props = Obj.magic @@
+    RD.props
+      ?className:class_name
+      () in
+  RR.createDomElement "li" ~props @@ Array.of_list children
 
 let h1 children =
   RR.createDomElement "h1" ~props:(empty ()) @@ Array.of_list children

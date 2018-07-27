@@ -88,15 +88,13 @@ module TestCasePanel = struct
                 let obj = test_data_obj () in
                 set obj "test_data" @@ objectArray test_data;
                 stringify @@ object_ obj)) in
-        let test_case_copy _ =
-          copy_to_clipboard {j|.test-case-input.case-$(idx)|j} in
         div ~class_name:{j|test-case-panel $(panel_class)|j} [
           header;
           div ~class_name:"test-case-panel-body" [
             Parts.Board.c ~board [];
             div ~class_name:"test-case-io" [
               textarea ~class_name:{j|test-case-input case-$(idx)|j} ~read_only:true ~value:input_text [];
-              button ~class_name:"test-case-copy" ~on_click:test_case_copy [
+              button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard {j|.test-case-input.case-$(idx)|j}) [
                 s {j|クリップボードにコピー|j}
               ];
               textarea ~class_name:"test-case-output" ~read_only:(state <> TC.Waiting) ~on_change:change_output ~value:output [];
@@ -122,22 +120,57 @@ module TestCasePanel = struct
     RR.element @@ make ~idx ~input_style ~test_case ~dispatcher children
 end
 
+let make_input_all test_cases = function
+    Submit.Competitive ->
+    let input =
+      test_cases
+      |> Array.mapi (fun i {Submit.TestCase.board} ->
+          ToInput.competitive board)
+      |> Array.to_list
+      |> String.concat "\n" in
+    String.concat "\n" [string_of_int @@ Array.length test_cases; input]
+  | Submit.Doukaku ->
+    test_cases
+    |> Array.mapi (fun i {Submit.TestCase.board} ->
+        let src = ToInput.doukaku board in
+        {j|/*$(i)*/ test("$(src)");|j})
+    |> Array.to_list
+    |> String.concat "\n"
+  | Submit.JSON ->
+    let test_data =
+      test_cases
+      |> Array.mapi (fun i {Submit.TestCase.board} ->
+          let src = ToInput.doukaku board in
+          Js.Dict.(Js.Json.(
+              let test_data = empty () in
+              set test_data "number" @@ number @@ float_of_int i;
+              set test_data "src" @@ string src;
+              test_data)))
+      |> Js.Json.objectArray in
+    Js.Dict.(Js.Json.(
+        let obj = test_data_obj () in
+        set obj "test_data" test_data;
+        stringify @@ object_ obj))
+
 type dispatcher = {
   header_click: int -> RE.Mouse.t -> unit;
   change_input_style: Submit.input_style -> RE.Mouse.t -> unit;
   all_toggle: bool -> RE.Mouse.t -> unit;
   change_output: int -> RE.Form.t -> unit;
   submit_answer: int -> RE.Mouse.t -> unit;
+  change_output_all: RE.Form.t -> unit;
+  submit_answer_all: RE.Mouse.t -> unit
 }
 
 let component = RR.statelessComponent "Submit"
 
 let make
-    ~submit:{Submit.state; input_style; test_cases}
-    ~dispatcher:{header_click; change_input_style; all_toggle; change_output; submit_answer}
+    ~submit:{Submit.state; input_style; test_cases; output}
+    ~dispatcher:{header_click; change_input_style; all_toggle; change_output; submit_answer; change_output_all; submit_answer_all}
     _children = {
   component with
   render= fun _self ->
+    let input_all_value = make_input_all test_cases input_style in
     let test_cases =
       test_cases
       |> Array.mapi (fun idx test_case ->
@@ -161,6 +194,16 @@ let make
       div [
         div ~class_name:"input-style-buttons" input_style_buttons;
         div ~class_name:"all-toggle-buttons" all_toggle_buttons
+      ];
+      div ~class_name:"test-case-io-all" [
+        textarea ~class_name:"test-case-input" ~read_only:true ~value:input_all_value [];
+        button ~class_name:"test-case-copy" ~on_click:(fun _ -> copy_to_clipboard ".test-case-io-all > .test-case-input") [
+          s {j|クリップボードにコピー|j}
+        ];
+        textarea ~class_name:"test-case-output-all" ~on_change:change_output_all ~value:output [];
+        button ~class_name:"test-case-submit-all" ~on_click:submit_answer_all [
+          s {j|提出|j}
+        ]
       ];
       div ~class_name:"test-case-list" test_cases
     ]
