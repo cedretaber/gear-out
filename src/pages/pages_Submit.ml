@@ -78,7 +78,8 @@ module TestCasePanel = struct
         | TC.WrongAnswer -> "wrong-answer" in
       if is_open then
         let input_text = match input_style with
-            Submit.Competitive -> ToInput.competitive board
+          | _ when state <> TC.Waiting -> ""
+          | Submit.Competitive -> ToInput.competitive board
           | Submit.Doukaku ->
             let src = ToInput.doukaku board in
             {j|test("$(src)");|j}

@@ -200,9 +200,9 @@ let make ?(initial_page=P.Problem) _children = {
         span ~class_name:"logo" [ s "Gears Out!" ];
         nav [
           ul [
-            li ~class_name:problem_tab [ a ~href:"#problem" ~on_click:(move_page P.Problem) [ s {j|問題|j} ] ];
-            li ~class_name:submit_tab [ a ~href:"#submit" ~on_click:(move_page P.Submit) [ s {j|提出|j} ] ];
-            li ~class_name:playground_tab [ a ~href:"#playground" ~on_click:(move_page P.Playground) [ s {j|サンプル|j} ] ]
+            li ~class_name:problem_tab ~on_click:(move_page P.Problem) [ a ~href:"#problem" [ s {j|問題|j} ] ];
+            li ~class_name:submit_tab ~on_click:(move_page P.Submit) [ a ~href:"#submit" [ s {j|提出|j} ] ];
+            li ~class_name:playground_tab ~on_click:(move_page P.Playground) [ a ~href:"#playground" [ s {j|サンプル|j} ] ]
           ]
         ]
       ];

@@ -47,10 +47,11 @@ let nav children =
 let ul children =
   RR.createDomElement "ul" ~props:(empty ()) @@ Array.of_list children
 
-let li ?class_name children =
+let li ?class_name ?on_click children =
   let props = Obj.magic @@
     RD.props
       ?className:class_name
+      ?onClick:on_click
       () in
   RR.createDomElement "li" ~props @@ Array.of_list children
 
