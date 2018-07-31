@@ -1,7 +1,7 @@
 open BSReact
 
 let make_style size =
-  let temp = String.concat " " @@ (Array.make size "1fr" |> Array.to_list) in
+  let temp = Array.make size "1fr" |> Array.to_list |> String.concat " " in
   let size = string_of_int (55 * size) in
   let size = {j|$(size)px|j} in
   Obj.magic [%bs.obj {
@@ -14,7 +14,7 @@ let make_style size =
 
 let component = RR.statelessComponent "GearBoard"
 
-let make ~board:{Board.size; Board.gears} ?gear_click ?(class_name="") _children = {
+let make ~board:{Board.size; gears} ?gear_click ?(class_name="") _children = {
   component with
   render= fun _self ->
     let class_name = {j|gear-board $(class_name)|j} in

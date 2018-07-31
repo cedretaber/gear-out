@@ -35,8 +35,7 @@ module FromOutput = struct
       Array.fold_right
         (fun str acm -> match Js.String.split " " str with
              [|n; output|] -> (try (int_of_string n, output) :: acm with _ -> acm)
-           | _ -> acm
-        )
+           | _ -> acm)
         cases
         []
     else
@@ -68,6 +67,7 @@ module Judge = struct
       TestCase.{ test_case with state= WrongAnswer; message= Some {j|不正な入力です: $(err)|j} }
     | Ok ops -> match exec ops board with
         Error (x, y) ->
+        let x, y = x + 1, y + 1 in
         TestCase.{ test_case with state= WrongAnswer; message= Some {j|不正な座標です: ($(x), $(y))|j} }
       | Ok board -> if Board.is_cleared board then
           TestCase.{ test_case with state= Accepted; board }
