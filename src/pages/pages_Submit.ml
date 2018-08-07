@@ -1,5 +1,7 @@
 open BSReact
 
+[@@@warning "-44-45"]
+
 let copy_to_clipboard: string -> unit = [%bs.raw fun query -> {|
   const target = document.querySelector(query)
   target.select()
@@ -135,8 +137,7 @@ let make_input_all test_cases = function
     Submit.Competitive ->
     let input =
       test_cases
-      |> Array.mapi (fun i {Submit.TestCase.board} ->
-          ToInput.competitive board)
+      |> Array.map (fun {Submit.TestCase.board} -> ToInput.competitive board)
       |> Array.to_list
       |> String.concat "\n" in
     String.concat "\n" [string_of_int @@ Array.length test_cases; input]
@@ -177,7 +178,7 @@ type dispatcher = {
 let component = RR.statelessComponent "Submit"
 
 let make
-    ~submit:{Submit.state; input_style; test_cases; output}
+    ~submit:{Submit.input_style; test_cases; output}
     ~dispatcher:{header_click; change_input_style; all_toggle; change_output; submit_answer; change_output_all; submit_answer_all; reset}
     _children = {
   component with
@@ -232,3 +233,5 @@ let make
 
 let c ~submit ~dispatcher children =
   RR.element @@ make ~submit ~dispatcher children
+
+[@@@warning "+44+45"]
