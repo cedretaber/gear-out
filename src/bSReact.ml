@@ -6,7 +6,7 @@ module RE = ReactEvent
 
 external s : string -> RR.reactElement = "%identity"
 
-let target_value e = (e |> RE.Form.target)##value
+let target_value e = (RE.Form.target e)##value
 
 let div ?class_name ?style ?on_click children =
   let props = RD.props
