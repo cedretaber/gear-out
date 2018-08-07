@@ -137,7 +137,7 @@ let reducer action state = match action with
       | _ -> RR.NoUpdate)
   | _ -> RR.NoUpdate
 
-let submit_dispatcherk {RR.send} = Pages.Submit.{
+let submit_dispatcher {RR.send} = Pages.Submit.{
     header_click= (fun i event ->
         RE.Mouse.preventDefault event;
         send @@ A.toggle_test_case i);
@@ -188,7 +188,7 @@ let make ?(initial_page=P.Problem) _children = {
         {S.page= P.Problem} ->
         Pages.Problem.c [], "active", "", ""
       | {S.page= P.Submit; submit} ->
-        Pages.Submit.c ~submit ~dispatcher:(submit_dispatcherk self) [], "", "active", ""
+        Pages.Submit.c ~submit ~dispatcher:(submit_dispatcher self) [], "", "active", ""
       | {S.page= P.Playground; playground} ->
         Pages.Playground.c ~playground ~dispatcher:(playground_dispatcher self playground) [], "", "", "active" in
     let move_page page event =
