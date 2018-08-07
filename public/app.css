@@ -67,6 +67,7 @@ input[type="text"] {
 
 textarea {
     appearance: none;
+    margin: 0;
     height: 10em;
     width: 30em;
 }
@@ -261,8 +262,12 @@ header.main nav ul li.active a {
     background-color: white;
 }
 
+.problem {
+    width: 58.6%;
+}
+
 .submit {
-    width: 80%;
+    width: 76.7%;
 }
 
 .submit-controls {
