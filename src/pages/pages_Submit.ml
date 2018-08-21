@@ -1,6 +1,4 @@
-open BSReact
-
-[@@@warning "-44-45"]
+open! BSReact
 
 let copy_to_clipboard: string -> unit = [%bs.raw fun query -> {|
   const target = document.querySelector(query)
@@ -187,8 +185,8 @@ let make
     let test_cases =
       test_cases
       |> Array.mapi (fun idx test_case ->
-          let dispatcher = TestCasePanel.{
-              header_click= header_click idx;
+          let dispatcher = {
+              TestCasePanel.header_click= header_click idx;
               change_output= change_output idx;
               submit_answer= submit_answer idx
             } in
@@ -233,5 +231,3 @@ let make
 
 let c ~submit ~dispatcher children =
   RR.element @@ make ~submit ~dispatcher children
-
-[@@@warning "+44+45"]

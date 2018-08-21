@@ -1,6 +1,4 @@
-open BSReact
-
-[@@@warning "-44"]
+open! BSReact
 
 type dispatcher = {
   gear_click: int -> RE.Mouse.t -> unit;
@@ -40,5 +38,3 @@ let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_cli
 
 let c ~playground ~dispatcher children =
   RR.element @@ make ~playground ~dispatcher children
-
-[@@@warning "+44"]
