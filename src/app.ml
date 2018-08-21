@@ -4,10 +4,60 @@ module A = Action
 module S = State
 module P = Page
 
-let rewrite_hash: string -> unit = [%bs.raw fun hash -> "location.hash = hash"]
+let rewrite_hash: string -> unit = [%raw fun hash -> "location.hash = hash"]
+
+let extract_board_str': string -> string Js.Nullable.t = [%raw fun str -> {| return (str.match(/"([^"]+)"/) || [])[1]; |}]
+let extract_board_str str = extract_board_str' str |> Js.Nullable.toOption
 
 module Result = Belt.Result
 module TestCase = S.Submit.TestCase
+
+module FromInput = struct
+  let gen_parse sep_of_line sep_of_gear str =
+    try
+      let lines = Js.String.split sep_of_line str in
+      let size = Array.length lines in
+      let gears =
+        lines
+        |> Array.map (Js.String.split sep_of_gear)
+        |> Array.to_list
+        |> Array.concat
+        |> Array.map (fun n -> int_of_string n - 1) in
+      if
+        Belt.Array.every gears (fun n -> n >= 0 && n < 4) && (size * size) = Array.length gears
+      then
+        Some Board.{size; gears}
+      else
+        None
+    with
+      _ -> None
+  
+  let parse str =
+    try
+      if String.contains str ',' then
+        str
+        |. extract_board_str
+        |. Belt.Option.flatMap (fun str ->
+          match Js.String.split "|" str with
+              [|size_str; board_str|] ->
+              let size' = int_of_string size_str in
+              Belt.Option.flatMap
+                (gen_parse "," "" board_str)
+                (function ({Board.size} as board) when size = size' -> Some board
+                        | _ -> None)
+            | _ -> None)
+      else
+        (match Js.String.split "\n" str |> Array.to_list with
+            size_str :: rest ->
+            let size' = int_of_string size_str in
+            Belt.Option.flatMap
+              (gen_parse "\n" " " @@ String.concat "\n" rest)
+              (function ({Board.size} as board) when size = size' -> Some board
+                      | _ -> None)
+          | _ -> None)
+    with
+      _ -> None
+end
 
 module FromOutput = struct
   let gen_parse sep_of_point sep_of_xy str =
@@ -134,6 +184,12 @@ let reducer action state = match action with
         RR.Update S.{ state with playground= { playground with size } }
       | A.ResetBoard, {S.playground= {size}} ->
         RR.Update S.{ state with playground= Playground.make size }
+      | A.ChangeBoardInput board_input, {S.playground} ->
+        RR.Update S.{ state with playground= { playground with board_input } }
+      | A.ClickMakeBoard, {S.playground= {board_input}} ->
+        (match FromInput.parse board_input with
+            Some board -> RR.Update S.{ state with playground= S.Playground.from_board board }
+          | None -> RR.NoUpdate)
       | _ -> RR.NoUpdate)
   | _ -> RR.NoUpdate
 
@@ -148,14 +204,12 @@ let submit_dispatcher {RR.send} = Pages.Submit.{
         RE.Mouse.preventDefault event;
         send @@ A.all_toggle is_open);
     change_output= (fun i event ->
-        let output = target_value event in
-        send @@ A.change_output i output);
+        send @@ A.change_output i @@ target_value event);
     submit_answer= (fun i event ->
         RE.Mouse.preventDefault event;
         send @@ A.submit_answer i);
     change_output_all= (fun event ->
-        let output = target_value event in
-        send @@ A.change_output_all output);
+        send @@ A.change_output_all @@ target_value event);
     submit_answer_all= (fun event ->
         RE.Mouse.preventDefault event;
         send A.submit_answer_all);
@@ -173,8 +227,14 @@ let playground_dispatcher {RR.send} {S.Playground.board= {size} as board} = Page
     change_size= (fun event ->
         let size = event |> target_value |> int_of_string |> max 2 |> min 8 in
         send @@ A.change_size size);
-    reset= (fun _ ->
-        send A.reset_board)
+    reset= (fun event ->
+        RE.Mouse.preventDefault event;
+        send A.reset_board);
+    change_board_input= (fun event ->
+        send @@ A.change_board_input @@ target_value event);
+    click_make_board= (fun event ->
+        RE.Mouse.preventDefault event;
+        send A.click_make_board)
   }
 
 let component = RR.reducerComponent "App"

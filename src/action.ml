@@ -15,6 +15,8 @@ type playground
   = ClickGear of Board.t
   | ChangeSize of int
   | ResetBoard
+  | ChangeBoardInput of string
+  | ClickMakeBoard
 
 type t
   = ChangePage of Page.t
@@ -37,3 +39,5 @@ let reset_submit = Submit ResetSubmit
 let click_gear board = Playground (ClickGear board)
 let change_size size = Playground (ChangeSize size)
 let reset_board = Playground ResetBoard
+let change_board_input board_input = Playground (ChangeBoardInput board_input)
+let click_make_board = Playground ClickMakeBoard

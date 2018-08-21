@@ -8,11 +8,25 @@ module Playground = struct
     size: int;
     count: int;
     board: Board.t;
-    state: state
+    state: state;
+    board_input: string;
   }
 
-  let make size =
-    { size; count= 0; board= Board.make size; state = Playing }
+  let make size = {
+    size;
+    count= 0;
+    board= Board.make size;
+    state= Playing;
+    board_input= "";
+  }
+
+  let from_board board = {
+    size= board.Board.size;
+    count= 0;
+    board= board;
+    state= Playing;
+    board_input= ""
+  }
 end
 
 module Submit = struct

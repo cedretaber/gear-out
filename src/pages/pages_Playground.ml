@@ -3,12 +3,14 @@ open! BSReact
 type dispatcher = {
   gear_click: int -> RE.Mouse.t -> unit;
   change_size: RE.Form.t -> unit;
-  reset: RE.Mouse.t -> unit
+  reset: RE.Mouse.t -> unit;
+  change_board_input: RE.Form.t -> unit;
+  click_make_board: RE.Mouse.t -> unit;
 }
 
 let component = RR.statelessComponent "Playground"
 
-let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_click; change_size; reset} _children = {
+let make ~playground:{State.Playground.board; size; count; board_input} ~dispatcher:{gear_click; change_size; reset; change_board_input; click_make_board} _children = {
   component with
   render= fun _self ->
     let class_name =
@@ -17,11 +19,19 @@ let make ~playground:{State.Playground.board; size; count} ~dispatcher:{gear_cli
       else
         "playground" in
     div ~class_name [
-      div ~class_name:"input-set" [
-        input ~type_:"number" ~value:(string_of_int size) ~on_change:change_size [];
-        button ~on_click:reset [
-          s {j|リセット|j}
-        ]
+      div ~class_name:"playground-inputs" [
+        div ~class_name:"input-set" [
+          input ~type_:"number" ~value:(string_of_int size) ~on_change:change_size [];
+          button ~on_click:reset [
+            s {j|リセット|j}
+          ]
+        ];
+        div ~class_name:"input-set" [
+          textarea ~on_change:change_board_input ~value:board_input [];
+          button ~on_click:click_make_board [
+            s {j|再現|j}
+          ]
+        ];
       ];
       div ~class_name:"board-holder" [
         div ~class_name:"board" [
