@@ -8,9 +8,29 @@ type dispatcher = {
   click_make_board: RE.Mouse.t -> unit;
 }
 
+let show_history =
+  let impl sep_of_point sep_of_line hist =
+    hist
+    |> List.fold_left
+      (fun acc (x, y) ->
+        let point =
+          [x; y]
+          |> List.map (fun n -> string_of_int (n + 1))
+          |> String.concat sep_of_point in
+        point :: acc)
+      []
+    |> String.concat sep_of_line in
+  function
+      State.Submit.Competitive -> impl " " "\n"
+    | _ -> impl "" ","
+
 let component = RR.statelessComponent "Playground"
 
-let make ~playground:{State.Playground.board; size; count; board_input} ~dispatcher:{gear_click; change_size; reset; change_board_input; click_make_board} _children = {
+let make
+    ~input_style
+    ~playground:{State.Playground.board; size; count; board_input; history_reversed}
+    ~dispatcher:{gear_click; change_size; reset; change_board_input; click_make_board}
+    _children = {
   component with
   render= fun _self ->
     let class_name =
@@ -38,13 +58,16 @@ let make ~playground:{State.Playground.board; size; count; board_input} ~dispatc
           Parts.Board.c ~board ~gear_click []
         ]
       ];
-      div ~class_name:"count" [
-        p [
-          s {j|操作回数: $(count)|j}
-        ]
+      div ~class_name:"playground-data" [
+        div ~class_name:"count" [
+          p [
+            s {j|操作回数: $(count)|j}
+          ]
+        ];
+        textarea ~read_only:true ~value:(show_history input_style history_reversed) [];
       ]
     ]
 }
 
-let c ~playground ~dispatcher children =
-  RR.element @@ make ~playground ~dispatcher children
+let c ~input_style ~playground ~dispatcher children =
+  RR.element @@ make ~input_style ~playground ~dispatcher children

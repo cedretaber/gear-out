@@ -175,11 +175,16 @@ let reducer action state = match action with
         RR.Update { state with submit= S.Submit.make () }
       | _ -> RR.NoUpdate)
   | A.Playground action -> (match action, state with
-        A.ClickGear board, {S.playground= {state= Playing; count} as playground} ->
-        if Board.is_cleared board then
-          RR.Update S.{ state with playground= Playground.{ playground with state= Cleared; count= count + 1; board } }
-        else
-          RR.Update S.{ state with playground= Playground.{ playground with board; count= count + 1 } }
+        A.ClickGear i, {S.playground= {state= Playing; count; size; board; history_reversed} as playground} ->
+        let x, y = i mod size, i / size in
+        (match Board.touch x y board with
+            Some board ->
+            let history_reversed = (x, y) :: history_reversed in
+            if Board.is_cleared board then
+              RR.Update S.{ state with playground= Playground.{ playground with state= Cleared; count= count + 1; board; history_reversed } }
+            else
+              RR.Update S.{ state with playground= Playground.{ playground with board; count= count + 1; history_reversed } }
+          | None -> RR.NoUpdate)
       | A.ChangeSize size, {S.playground} ->
         RR.Update S.{ state with playground= { playground with size } }
       | A.ResetBoard, {S.playground= {size}} ->
@@ -218,12 +223,9 @@ let submit_dispatcher {RR.send} = Pages.Submit.{
         send A.reset_submit)
   }
 
-let playground_dispatcher {RR.send} {S.Playground.board= {size} as board} = Pages.Playground.{
+let playground_dispatcher {RR.send} = Pages.Playground.{
     gear_click= (fun i _ ->
-        let x, y = i mod size, i / size in
-        match Board.touch x y board with
-          Some board -> send @@ A.click_gear board
-        | None -> ());
+        send @@ A.click_gear i);
     change_size= (fun event ->
         let size = event |> target_value |> int_of_string |> max 2 |> min 8 in
         send @@ A.change_size size);
@@ -249,8 +251,8 @@ let make ?(initial_page=P.Problem) _children = {
         Pages.Problem.c [], "active", "", ""
       | {S.page= P.Submit; submit} ->
         Pages.Submit.c ~submit ~dispatcher:(submit_dispatcher self) [], "", "active", ""
-      | {S.page= P.Playground; playground} ->
-        Pages.Playground.c ~playground ~dispatcher:(playground_dispatcher self playground) [], "", "", "active" in
+      | {S.page= P.Playground; playground; submit= {S.Submit.input_style}} ->
+        Pages.Playground.c ~input_style ~playground ~dispatcher:(playground_dispatcher self) [], "", "", "active" in
     let move_page page event =
       RE.Mouse.preventDefault event;
       rewrite_hash (match page with P.Problem -> "problem" | P.Submit -> "submit" | P.Playground -> "playground");

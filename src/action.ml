@@ -12,7 +12,7 @@ type submit
   | ResetSubmit
 
 type playground
-  = ClickGear of Board.t
+  = ClickGear of int
   | ChangeSize of int
   | ResetBoard
   | ChangeBoardInput of string

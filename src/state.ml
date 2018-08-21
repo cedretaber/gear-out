@@ -10,6 +10,7 @@ module Playground = struct
     board: Board.t;
     state: state;
     board_input: string;
+    history_reversed: (int * int) list;
   }
 
   let make size = {
@@ -18,6 +19,7 @@ module Playground = struct
     board= Board.make size;
     state= Playing;
     board_input= "";
+    history_reversed= []
   }
 
   let from_board board = {
@@ -25,7 +27,8 @@ module Playground = struct
     count= 0;
     board= board;
     state= Playing;
-    board_input= ""
+    board_input= "";
+    history_reversed= []
   }
 end
 
