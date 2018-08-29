@@ -61,13 +61,14 @@ end
 
 module FromOutput = struct
   let gen_parse sep_of_point sep_of_xy str =
+    let invalid_input = {j|不正な入力です。|j} in
     let ops =
       str
       |> Js.String.split sep_of_point
       |> Array.map Result.(fun point ->
           match Js.String.split sep_of_xy point with
-            [|x; y|] -> Ok (int_of_string x - 1, int_of_string y - 1)
-          | err -> Error err) in
+            [|x; y|] -> (try Ok (int_of_string x - 1, int_of_string y - 1) with _ -> Error invalid_input)
+          | _ -> Error invalid_input) in
     Array.fold_right Result.(fun point -> function
           Ok acm -> (match point with
               Ok point -> Ok (point :: acm)

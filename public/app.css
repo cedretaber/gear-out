@@ -5,6 +5,7 @@ body {
 
 .content {
     width: 100%;
+    min-width: 1550px;
     display: flex;
     justify-content: center;
     margin-top: 6rem;
