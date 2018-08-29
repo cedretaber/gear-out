@@ -282,8 +282,8 @@ header.main nav ul li.active a {
     margin: 1em 2em;
 }
 
-.playground-inputs > div:last-of-type {
-    margin-top: 1rem;
+.playground-inputs > p {
+    margin-top: 2rem;
 }
 
 .reset-button button {

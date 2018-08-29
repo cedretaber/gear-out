@@ -8,27 +8,30 @@ module Playground = struct
     size: int;
     count: int;
     board: Board.t;
+    history_reversed: (int * int) list;
     state: state;
     board_input: string;
-    history_reversed: (int * int) list;
+    ops_input: string
   }
 
   let make size = {
     size;
     count= 0;
     board= Board.make size;
+    history_reversed= [];
     state= Playing;
     board_input= "";
-    history_reversed= []
+    ops_input= ""
   }
 
   let from_board board = {
     size= board.Board.size;
     count= 0;
     board= board;
+    history_reversed= [];
     state= Playing;
     board_input= "";
-    history_reversed= []
+    ops_input= ""
   }
 end
 

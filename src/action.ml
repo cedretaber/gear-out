@@ -17,6 +17,9 @@ type playground
   | ResetBoard
   | ChangeBoardInput of string
   | ClickMakeBoard
+  | ChangeOpsInput of string
+  | ClickApplyOps
+  | RunOps of (int * int) list
 
 type t
   = ChangePage of Page.t
@@ -41,3 +44,6 @@ let change_size size = Playground (ChangeSize size)
 let reset_board = Playground ResetBoard
 let change_board_input board_input = Playground (ChangeBoardInput board_input)
 let click_make_board = Playground ClickMakeBoard
+let change_ops_input ops_input = Playground (ChangeOpsInput ops_input)
+let click_apply_ops = Playground ClickApplyOps
+let run_ops ops = Playground (RunOps ops)

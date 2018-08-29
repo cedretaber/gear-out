@@ -8,33 +8,6 @@ let copy_to_clipboard: string -> unit = [%bs.raw fun query -> {|
 
 module Submit = State.Submit
 
-module ToInput = struct
-
-  let to_nums {Board.gears; size} =
-    let nums = Array.map (fun n -> (n mod 4 + 4) mod 4 + 1) gears in
-    let nums, _, _ =
-      Array.fold_right (fun i -> function
-            acm, line, 1 -> (i :: line) :: acm, [], size
-          | acm, line, n -> acm, i :: line, n - 1)
-        nums
-        ([], [], size) in
-    nums
-
-  let nums_to_string ({Board.size} as board) sep_of_num sep_of_line sep_of_size =
-    let nums =
-      board
-      |> to_nums
-      |> List.map (fun line -> String.concat sep_of_num @@ List.map string_of_int line)
-      |> String.concat sep_of_line in
-    String.concat sep_of_size [string_of_int size; nums]
-
-  let competitive board =
-    nums_to_string board " " "\n" "\n"
-
-  let doukaku board =
-    nums_to_string board "" "," "|"
-end
-
 let test_data_obj () = Js.Dict.(Js.Json.(
     let obj = empty () in
     set obj "event_id" @@ string "E26";
@@ -79,12 +52,12 @@ module TestCasePanel = struct
       if is_open then
         let input_text = match input_style with
           | _ when state <> TC.Waiting -> ""
-          | Submit.Competitive -> ToInput.competitive board
+          | Submit.Competitive -> Board.competitive board
           | Submit.Doukaku ->
-            let src = ToInput.doukaku board in
+            let src = Board.doukaku board in
             {j|test("$(src)");|j}
           | Submit.JSON ->
-            let src = ToInput.doukaku board in
+            let src = Board.doukaku board in
             Js.Dict.(Js.Json.(
                 let test_data = empty () in
                 set test_data "number" @@ number @@ float_of_int idx;
@@ -135,14 +108,14 @@ let make_input_all test_cases = function
     Submit.Competitive ->
     let input =
       test_cases
-      |> Array.map (fun {Submit.TestCase.board} -> ToInput.competitive board)
+      |> Array.map (fun {Submit.TestCase.board} -> Board.competitive board)
       |> Array.to_list
       |> String.concat "\n" in
     String.concat "\n" [string_of_int @@ Array.length test_cases; input]
   | Submit.Doukaku ->
     test_cases
     |> Array.mapi (fun i {Submit.TestCase.board} ->
-        let src = ToInput.doukaku board in
+        let src = Board.doukaku board in
         {j|/*$(i)*/ test("$(src)");|j})
     |> Array.to_list
     |> String.concat "\n"
@@ -150,7 +123,7 @@ let make_input_all test_cases = function
     let test_data =
       test_cases
       |> Array.mapi (fun i {Submit.TestCase.board} ->
-          let src = ToInput.doukaku board in
+          let src = Board.doukaku board in
           Js.Dict.(Js.Json.(
               let test_data = empty () in
               set test_data "number" @@ number @@ float_of_int i;

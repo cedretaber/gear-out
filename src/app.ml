@@ -128,7 +128,9 @@ end
 
 let initial_state page () =
   Random.self_init ();
-  S.{ page; submit= Submit.make (); playground= Playground.make 4 }
+  let submit = S.Submit.make ()
+  and playground = S.Playground.make 4 in
+  S.{ page; submit; playground= { playground with board_input= Board.competitive playground.board } }
 
 let reducer action state = match action with
     A.ChangePage page -> RR.Update S.{ state with page }
@@ -176,26 +178,62 @@ let reducer action state = match action with
         RR.Update { state with submit= S.Submit.make () }
       | _ -> RR.NoUpdate)
   | A.Playground action -> (match action, state with
-        A.ClickGear i, {S.playground= {state= Playing; count; size; board; history_reversed} as playground} ->
+        A.ClickGear i, {S.playground= {state= Playing; count; size; board; history_reversed} as playground; submit= {input_style}} ->
         let x, y = i mod size, i / size in
         (match Board.touch x y board with
             Some board ->
             let history_reversed = (x, y) :: history_reversed in
-            if Board.is_cleared board then
-              RR.Update S.{ state with playground= Playground.{ playground with state= Cleared; count= count + 1; board; history_reversed } }
-            else
-              RR.Update S.{ state with playground= Playground.{ playground with board; count= count + 1; history_reversed } }
+            RR.Update S.{ state with playground= Playground.{
+              playground with
+              state= if Board.is_cleared board then Cleared else Playing;
+              count= count + 1;
+              board;
+              board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board;
+              history_reversed
+            } }
           | None -> RR.NoUpdate)
       | A.ChangeSize size, {S.playground} ->
         RR.Update S.{ state with playground= { playground with size } }
-      | A.ResetBoard, {S.playground= {size}} ->
-        RR.Update S.{ state with playground= Playground.make size }
+      | A.ResetBoard, {S.playground= {size}; submit= {input_style}} ->
+        let playground = S.Playground.make size in
+        let playground = { playground with board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) playground.board } in
+        RR.Update S.{ state with playground }
       | A.ChangeBoardInput board_input, {S.playground} ->
         RR.Update S.{ state with playground= { playground with board_input } }
-      | A.ClickMakeBoard, {S.playground= {board_input}} ->
+      | A.ClickMakeBoard, {S.playground= {board_input}; submit= {input_style}} ->
         (match FromInput.parse board_input with
-            Some board -> RR.Update S.{ state with playground= S.Playground.from_board board }
+            Some board ->
+            let playground = S.Playground.from_board board in
+            let playground = { playground with board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board } in
+            RR.Update S.{ state with playground }
           | None -> RR.NoUpdate)
+      | A.ChangeOpsInput ops_input, {S.playground} ->
+        RR.Update S.{ state with playground= { playground with ops_input } }
+      | ClickApplyOps, {S.playground= {ops_input} as playground} ->
+        (match FromOutput.parse ops_input with
+            Result.Ok ops ->
+            RR.UpdateWithSideEffects ({ state with playground= { playground with ops_input= "" } },
+              fun {RR.send} -> send @@ A.run_ops ops)
+          | Result.Error error ->
+            RR.Update { state with playground= { playground with ops_input= error } })
+      | RunOps [], _ ->
+        RR.NoUpdate
+      | RunOps ((x, y) :: rest), {S.playground= {state= Playing; count; board; history_reversed} as playground; submit= {input_style}} ->
+        (match Board.touch x y board with
+            Some board ->
+            let new_state =S.{ state with playground= Playground.{
+              playground with
+              state= if Board.is_cleared board then Cleared else Playing;
+              count= count + 1;
+              board;
+              board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board;
+              history_reversed= (x, y) :: history_reversed
+            } } in
+            RR.UpdateWithSideEffects (new_state, fun {RR.send} ->
+              Js.Global.setTimeout (fun () -> send @@ A.run_ops rest) 100 |> ignore)
+          | None ->
+            let x = x + 1 and y = y + 1 in
+            RR.Update { state with playground= { playground with ops_input= {j|不正な座標です。 ($(x), $(y))|j} } })
       | _ -> RR.NoUpdate)
   | _ -> RR.NoUpdate
 
@@ -237,7 +275,12 @@ let playground_dispatcher {RR.send} = Pages.Playground.{
         send @@ A.change_board_input @@ target_value event);
     click_make_board= (fun event ->
         RE.Mouse.preventDefault event;
-        send A.click_make_board)
+        send A.click_make_board);
+    change_ops_input= (fun event ->
+        send @@ A.change_ops_input @@ target_value event);
+    click_apply_ops= (fun event ->
+        RE.Mouse.preventDefault event;
+        send A.click_apply_ops)
   }
 
 let component = RR.reducerComponent "App"

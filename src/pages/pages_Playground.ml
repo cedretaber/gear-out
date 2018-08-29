@@ -6,6 +6,8 @@ type dispatcher = {
   reset: RE.Mouse.t -> unit;
   change_board_input: RE.Form.t -> unit;
   click_make_board: RE.Mouse.t -> unit;
+  change_ops_input: RE.Form.t -> unit;
+  click_apply_ops: RE.Mouse.t -> unit;
 }
 
 let show_history =
@@ -22,14 +24,14 @@ let show_history =
     |> String.concat sep_of_line in
   function
       State.Submit.Competitive -> impl " " "\n"
-    | _ -> impl "" ","
+    | _ -> impl "," "|"
 
 let component = RR.statelessComponent "Playground"
 
 let make
     ~input_style
-    ~playground:{State.Playground.board; size; count; board_input; history_reversed}
-    ~dispatcher:{gear_click; change_size; reset; change_board_input; click_make_board}
+    ~playground:{State.Playground.board; size; count; board_input; ops_input; history_reversed}
+    ~dispatcher:{gear_click; change_size; reset; change_board_input; click_make_board; change_ops_input; click_apply_ops}
     _children = {
   component with
   render= fun _self ->
@@ -46,12 +48,20 @@ let make
             s {j|リセット|j}
           ]
         ];
+        p [ s {j|ここに問題の入力を入れると、その状況を再現します。|j} ];
         div ~class_name:"input-set" [
           textarea ~on_change:change_board_input ~value:board_input [];
           button ~on_click:click_make_board [
             s {j|再現|j}
           ]
         ];
+        p [ s {j|ここに問題の出力を入れると、その出力を実行します。|j} ];
+        div ~class_name:"input-set" [
+          textarea ~on_change:change_ops_input ~value:ops_input [];
+          button ~on_click:click_apply_ops [
+            s {j|実行|j}
+          ]
+        ]
       ];
       div ~class_name:"board-holder" [
         div ~class_name:"board" [
