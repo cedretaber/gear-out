@@ -1,25 +1,29 @@
 # gear-out
 
-## Run Project
+横浜へなちょこプログラミング勉強会
+オフラインリアルタイムどう書くE26 問題
 
-```sh
-npm install
-npm start
+## Run
+
+```bash
+$ npm start
 # in another tab
-npm run webpack
+$ npm run webpack
 ```
 
-After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.
+## Build
 
-**For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example
-
-## Build for Production
-
-```sh
-npm run build
-npm run webpack:production
+```bash
+$ npm run build
+$ npm run webpack:production
 ```
 
-This will replace the development artifact `build/Index.js` for an optimized version.
+## Test
 
-**To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `"commonjs"` to `"es6"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.
+```bash
+$ npm run test
+```
+
+## License
+
+MIT
