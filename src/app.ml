@@ -15,7 +15,7 @@ module TestCase = S.Submit.TestCase
 module FromInput = struct
   let gen_parse sep_of_line sep_of_gear str =
     try
-      let lines = Js.String.split sep_of_line str in
+      let lines = str |> Js.String.trim |> Js.String.split sep_of_line in
       let size = Array.length lines in
       let gears =
         lines
