@@ -163,6 +163,8 @@ let reducer action state = match action with
           { state with submit= {submit with state= Testing} },
           fun self ->
             self.send @@ A.run_board @@ FromOutput.split_testcases output)
+      | A.RunBoard [], {S.submit= {state= Testing} as submit} ->
+        RR.Update { state with submit= { submit with state= Ready} }
       | A.RunBoard ((idx, output) :: rest), {S.submit= {state= Testing; test_cases} as submit} ->
         (match test_cases.(idx) with
            {TestCase.state= Waiting} as test_case ->
@@ -172,8 +174,6 @@ let reducer action state = match action with
              fun self ->
                self.send @@ A.run_board rest)
          | _ -> RR.SideEffects (fun self -> self.send @@ A.run_board rest))
-      | A.RunBoard [], {S.submit= {state= Testing} as submit} ->
-        RR.Update { state with submit= { submit with state= Ready} }
       | A.ResetSubmit, {S.submit= {state= Ready}} ->
         RR.Update { state with submit= S.Submit.make () }
       | _ -> RR.NoUpdate)
@@ -182,14 +182,13 @@ let reducer action state = match action with
         let x, y = i mod size, i / size in
         (match Board.touch x y board with
             Some board ->
-            let history_reversed = (x, y) :: history_reversed in
             RR.Update S.{ state with playground= Playground.{
               playground with
               state= if Board.is_cleared board then Cleared else Playing;
               count= count + 1;
               board;
               board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board;
-              history_reversed
+              history_reversed= (x, y) :: history_reversed
             } }
           | None -> RR.NoUpdate)
       | A.ChangeSize size, {S.playground} ->
