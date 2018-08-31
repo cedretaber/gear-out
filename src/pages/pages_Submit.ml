@@ -8,13 +8,13 @@ let copy_to_clipboard: string -> unit = [%bs.raw fun query -> {|
 
 module Submit = State.Submit
 
-let test_data_obj () = 
-    let open Js.Dict in
-    let open Js.Json in
-    let obj = empty () in
-    set obj "event_id" @@ string "E26";
-    set obj "event_url" @@ string "https://cedretaber.github.io/doukaku/e26";
-    obj
+let test_data_obj () =
+  let open Js.Dict in
+  let open Js.Json in
+  let obj = empty () in
+  set obj "event_id" @@ string "E26";
+  set obj "event_url" @@ string "https://cedretaber.github.io/doukaku/e26";
+  obj
 
 module TestCasePanel = struct
 
