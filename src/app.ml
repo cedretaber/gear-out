@@ -128,10 +128,17 @@ module Judge = struct
           TestCase.{ test_case with state= WrongAnswer; board }
 end
 
+let to_input board = function
+    S.Submit.Competitive ->
+    Board.competitive board
+  | _ ->
+    let src = Board.doukaku board in
+    {j|test("$(src)");|j}
+
 let initial_state page () =
   Random.self_init ();
-  let submit = S.Submit.make ()
-  and playground = S.Playground.make 4 in
+  let submit = S.Submit.make () in
+  let playground = S.Playground.make 4 in
   S.{ page; submit; playground= { playground with board_input= Board.competitive playground.board } }
 
 let reducer action state = match action with
@@ -189,7 +196,7 @@ let reducer action state = match action with
               state= if Board.is_cleared board then Cleared else Playing;
               count= count + 1;
               board;
-              board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board;
+              board_input= to_input board input_style;
               history_reversed= (x, y) :: history_reversed
             } }
           | None -> RR.NoUpdate)
@@ -197,7 +204,10 @@ let reducer action state = match action with
         RR.Update S.{ state with playground= { playground with size } }
       | A.ResetBoard, {S.playground= {size}; submit= {input_style}} ->
         let playground = S.Playground.make size in
-        let playground = { playground with board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) playground.board } in
+        let playground = {
+          playground with
+          board_input= to_input playground.board input_style;
+        } in
         RR.Update S.{ state with playground }
       | A.ChangeBoardInput board_input, {S.playground} ->
         RR.Update S.{ state with playground= { playground with board_input } }
@@ -205,7 +215,7 @@ let reducer action state = match action with
         (match FromInput.parse board_input with
             Some board ->
             let playground = S.Playground.from_board board in
-            let playground = { playground with board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board } in
+            let playground = { playground with board_input= to_input board input_style } in
             RR.Update S.{ state with playground }
           | None -> RR.NoUpdate)
       | A.ChangeOpsInput ops_input, {S.playground} ->
@@ -227,7 +237,7 @@ let reducer action state = match action with
               state= if Board.is_cleared board then Cleared else Playing;
               count= count + 1;
               board;
-              board_input= (match input_style with S.Submit.Competitive -> Board.competitive | _ -> Board.doukaku) board;
+              board_input= to_input board input_style;
               history_reversed= (x, y) :: history_reversed
             } } in
             RR.UpdateWithSideEffects (new_state, fun {RR.send} ->
