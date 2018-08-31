@@ -10,7 +10,7 @@ let touch' x y size gears =
   gears.(y * size + x) <- gears.(y * size + x) + 1;
   List.iter
     (fun (dx, dy) ->
-       let x, y = x + dx, y + dy in
+       let x = x + dx and y = y + dy in
        if x >= 0 && x < size && y >= 0 && y < size then
          gears.(y * size + x) <- gears.(y * size + x) - 1;)
     dirs

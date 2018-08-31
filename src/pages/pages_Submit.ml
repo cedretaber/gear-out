@@ -59,14 +59,15 @@ module TestCasePanel = struct
             {j|test("$(src)");|j}
           | Submit.JSON ->
             let src = Board.doukaku board in
-            Js.Dict.(Js.Json.(
-                let test_data = empty () in
-                set test_data "number" @@ number @@ float_of_int idx;
-                set test_data "src" @@ string src;
-                let test_data = [|test_data|] in
-                let obj = test_data_obj () in
-                set obj "test_data" @@ objectArray test_data;
-                stringify @@ object_ obj)) in
+            let open Js.Dict in
+            let open Js.Json in
+            let test_data = empty () in
+            set test_data "number" @@ number @@ float_of_int idx;
+            set test_data "src" @@ string src;
+            let test_data = [|test_data|] in
+            let obj = test_data_obj () in
+            set obj "test_data" @@ objectArray test_data;
+            stringify @@ object_ obj in
         div ~class_name:{j|test-case-panel $(panel_class)|j} [
           header;
           div ~class_name:"test-case-panel-body" [
@@ -121,18 +122,17 @@ let make_input_all test_cases = function
     |> Array.to_list
     |> String.concat "\n"
   | Submit.JSON ->
+    let open Js.Dict in
+    let open Js.Json in
     let test_data =
       test_cases
       |> Array.mapi (fun i {Submit.TestCase.board} ->
           let src = Board.doukaku board in
-          Js.Dict.(Js.Json.(
-              let test_data = empty () in
-              set test_data "number" @@ number @@ float_of_int i;
-              set test_data "src" @@ string src;
-              test_data)))
+          let test_data = empty () in
+          set test_data "number" @@ number @@ float_of_int i;
+          set test_data "src" @@ string src;
+          test_data)
       |> Js.Json.objectArray in
-    let open Js.Dict in
-    let open Js.Json in
     let obj = test_data_obj () in
     set obj "test_data" test_data;
     stringify @@ object_ obj
