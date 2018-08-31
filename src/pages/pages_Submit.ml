@@ -8,12 +8,13 @@ let copy_to_clipboard: string -> unit = [%bs.raw fun query -> {|
 
 module Submit = State.Submit
 
-let test_data_obj () = Js.Dict.(Js.Json.(
+let test_data_obj () = 
+    let open Js.Dict in
+    let open Js.Json in
     let obj = empty () in
     set obj "event_id" @@ string "E26";
-    set obj "event_url" @@ string "";
+    set obj "event_url" @@ string "https://cedretaber.github.io/doukaku/e26";
     obj
-  ))
 
 module TestCasePanel = struct
 
@@ -130,10 +131,11 @@ let make_input_all test_cases = function
               set test_data "src" @@ string src;
               test_data)))
       |> Js.Json.objectArray in
-    Js.Dict.(Js.Json.(
-        let obj = test_data_obj () in
-        set obj "test_data" test_data;
-        stringify @@ object_ obj))
+    let open Js.Dict in
+    let open Js.Json in
+    let obj = test_data_obj () in
+    set obj "test_data" test_data;
+    stringify @@ object_ obj
 
 type dispatcher = {
   header_click: int -> RE.Mouse.t -> unit;

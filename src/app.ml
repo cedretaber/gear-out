@@ -61,21 +61,22 @@ end
 
 module FromOutput = struct
   let gen_parse sep_of_point sep_of_xy str =
+    let open Result in
     let invalid_input = {j|不正な入力です。|j} in
     let ops =
       str
       |> Js.String.split sep_of_point
-      |> Array.map Result.(fun point ->
+      |> Array.map (fun point ->
           match Js.String.split sep_of_xy point with
             [|x; y|] -> (try Ok (int_of_string x - 1, int_of_string y - 1) with _ -> Error invalid_input)
           | _ -> Error invalid_input) in
-    Array.fold_right Result.(fun point -> function
+    Array.fold_right (fun point -> function
           Ok acm -> (match point with
               Ok point -> Ok (point :: acm)
             | Error err -> Error err)
         | Error err -> Error err)
       ops
-      (Result.Ok [])
+      (Ok [])
 
   let parse str =
     (if String.contains str ',' then gen_parse "|" "," else gen_parse "\n" " ") str
@@ -103,13 +104,14 @@ end
 
 module Judge = struct
   let exec ops board =
-    List.fold_left Result.(fun result (x, y) ->
+    let open Result in
+    List.fold_left (fun result (x, y) ->
         match result with
           Ok board -> (match Board.touch x y board with
               Some board -> Ok board
             | None -> Error (x, y))
         | Error err -> Error err)
-      (Result.Ok board)
+      (Ok board)
       ops
 
   let run ({TestCase.board} as test_case) output =
